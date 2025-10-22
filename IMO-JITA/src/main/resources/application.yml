@@ -1,0 +1,37 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /jita
+
+spring:
+  application:
+    name: Port
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://143.198.184.62:5432/spocp
+    username: entossdev
+    password: Ssh6655ip
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: imo_jita
+
+
+master-data:
+  baseUrl: http://dev-mycargo.ibpaas.pomfret.cloud/api/public/verificationdata
+
+
+
+
+
+
+
+
+
+
+
