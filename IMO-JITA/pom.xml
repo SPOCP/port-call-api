@@ -8,8 +8,8 @@
         <version>3.3.12</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.entoss.jita</groupId>
-    <artifactId>IMO-JITA</artifactId>
+    <groupId>com.blychain.spocp</groupId>
+    <artifactId>imo-jita-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Port</name>
     <description>Demo project for IMO-JITA</description>

@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://143.198.184.62:5432/spocp
-    username: entossdev
-    password: Ssh6655ip
+    url: #####
+    username: #####
+    password: #####
 
   jpa:
     hibernate:
