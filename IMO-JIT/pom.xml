@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.blychain.spocp</groupId>
-    <artifactId>imo-jita-api</artifactId>
+    <artifactId>imo-jit-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Port</name>
-    <description>Demo project for IMO-JITA</description>
+    <description>Implementation project for IMO-JIT</description>
     <url/>
     <licenses>
         <license/>

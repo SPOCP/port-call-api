@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    context-path: /jita
+    context-path: /jit
 
 spring:
   application:
@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: #####
-    username: #####
-    password: #####
+    url: jdbc:postgresql://<YOUR_DB_HOST>:5432/<YOUR_DB_NAME>
+    username: <YOUR_DB_USERNAME>
+    password: <YOUR_DB_PASSWORD>
 
   jpa:
     hibernate:
@@ -19,7 +19,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: imo_jita
+        default_schema: imo_jit
 
 
 master-data:
