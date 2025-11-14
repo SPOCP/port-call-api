@@ -1,5 +1,6 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_agent_at_port_agent_at_port_address", columnNames = "agent_at_port_id")
+})
 public class AgentAtPortAddress {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +35,10 @@ public class AgentAtPortAddress {
 
     @Column(length = 256, name = "agent_po_box")
     private String agentPOBox;
+
+    @OneToOne
+    @JoinColumn(name = "agent_at_port_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_agent_at_port_agent_at_port_address"))
+    @JsonBackReference
+    private AgentAtPort agentAtPort;
+
 }

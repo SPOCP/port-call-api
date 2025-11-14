@@ -1,6 +1,7 @@
 package com.blychain.spocp.transferObject;
 
 import com.blychain.spocp.enums.ServiceCode;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -12,8 +13,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MaritimeServiceTO {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long maritimeServiceId;
+
     @Schema(example = "CRGO")
-//    @Size(max = 4, message = "The length of serviceCoded cannot be more than 4")
     private ServiceCode serviceCoded;
 
     @Schema(example = "Container cargo operations")

@@ -15,8 +15,8 @@ public class MovementInPortLocationTO {
     @Size(max = 256, message = "The length of terminalName cannot be more than 256")
     private String terminalName;
 
-    //    @Size(max = 256, message = "The length of terminalCoded cannot be more than 256")
-//    Size Not Defined
+    //    Size Not Defined - IMO
+    @Size(max = 256, message = "The length of terminalCoded cannot be more than 256")
     @Schema(example = "JNPT-01")
     private String terminalCoded;
 
@@ -28,8 +28,8 @@ public class MovementInPortLocationTO {
     @Size(max = 256, message = "The length of berthName cannot be more than 256")
     private String berthName;
 
-        @Size(max = 256, message = "The length of berthCoded cannot be more than 256")
-//    Size Not Defined
+    //    Size Not Defined - IMO
+    @Size(max = 256, message = "The length of berthCoded cannot be more than 256")
     @Schema(example = "BRT5")
     private String berthCoded;
 
@@ -41,8 +41,8 @@ public class MovementInPortLocationTO {
     @Size(max = 256, message = "The length of anchorageName cannot be more than 256")
     private String anchorageName;
 
-        @Size(max = 256, message = "The length of anchorageCoded cannot be more than 256")
-//    Size Not Defined
+    //    Size Not Defined - IMO
+    @Size(max = 256, message = "The length of anchorageCoded cannot be more than 256")
     @Schema(example = "ANC-MUM-01")
     private String anchorageCoded;
 

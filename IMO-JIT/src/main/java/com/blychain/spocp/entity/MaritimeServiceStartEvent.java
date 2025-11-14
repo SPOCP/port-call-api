@@ -1,9 +1,7 @@
 package com.blychain.spocp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -14,6 +12,9 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_maritime_service_maritime_service_start_event",columnNames = "maritime_service_id")
+})
 public class MaritimeServiceStartEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +27,9 @@ public class MaritimeServiceStartEvent {
     private OffsetDateTime dateAndTimeOfServiceStartPlanned;
 
     private OffsetDateTime dateAndTimeOfServiceStartRequested;
+
+    @OneToOne
+    @JoinColumn(name = "maritime_service_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_maritime_service_maritime_service_start_event"))
+    @JsonBackReference
+    private MaritimeService maritimeService;
 }

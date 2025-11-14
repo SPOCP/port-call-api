@@ -186,7 +186,7 @@ public class GlobalExceptionHandler {
     // Unexpected errors
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseTO> handleGenericException(Exception ex) {
-        String message = "Something went wrong. Please try again or contact support.";
+        String message = "Something went wrong.";
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 

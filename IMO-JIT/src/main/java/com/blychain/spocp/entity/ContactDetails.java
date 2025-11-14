@@ -1,5 +1,7 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,9 +13,8 @@ import lombok.*;
 @Builder
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_contact_details_communication", columnNames = "communication_id")
-        }
-)
+                @UniqueConstraint(name = "uk_maritime_service_contact_details", columnNames = "maritime_service_id")
+        })
 public class ContactDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +26,12 @@ public class ContactDetails {
     @Column(length = 70)
     private String serviceProviderContactGivenName;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "communication_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_contact_details_communication"))
+    @OneToOne(mappedBy = "contactDetails", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Communication communication;
+
+    @OneToOne
+    @JoinColumn(name = "maritime_service_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_maritime_service_contact_details"))
+    @JsonBackReference
+    private MaritimeService maritimeService;
 }

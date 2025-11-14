@@ -1,5 +1,6 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_contact_details_communication", columnNames = "contact_details_id")
+})
 public class Communication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +27,11 @@ public class Communication {
     @Column(length = 50)
     private String serviceContactMobileNumber;
 
-    @Column(length = 256,name = "service_url")
+    @Column(length = 256, name = "service_url")
     private String serviceURL;
+
+    @OneToOne
+    @JoinColumn(name = "contact_details_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_contact_details_communication"))
+    @JsonBackReference
+    private ContactDetails contactDetails;
 }

@@ -1,9 +1,9 @@
 package com.blychain.spocp.controller;
 
-import com.blychain.spocp.service.VoyageService;
+import com.blychain.spocp.service.ItineraryService;
 import com.blychain.spocp.transferObject.ErrorResponseTO;
+import com.blychain.spocp.transferObject.ItineraryTO;
 import com.blychain.spocp.transferObject.MessageTO;
-import com.blychain.spocp.transferObject.VoyageTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,27 +11,27 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/voyage")
+@RequestMapping("/voyage/{voyageNumber}/itinerary")
 @RequiredArgsConstructor
-@Tag(name = "Voyage API", description = "Voyage operations")
-public class VoyageController {
+@Tag(name = "Itinerary API", description = "Itinerary operations")
+public class ItineraryController {
 
-    //Service
-    private final VoyageService voyageService;
+    //    Service
+    private final ItineraryService itineraryService;
+
 
     @PostMapping
-    @Operation(summary = "Create Voyage",
+    @Operation(summary = "Create Itinerary",
             description = """
-                    Create a new Voyage
+                    Create a new Itinerary for a particular Voyage
                             
-                    - Request body must contain valid **Voyage** Payload
+                    - Request body must contain valid **Itinerary** Payload
+                                        
+                    - **voyageNumber** (path variable) is **mandatory**
                             
                     - Returns **201** on success   
                             
@@ -41,7 +41,7 @@ public class VoyageController {
                     @ApiResponse(
                             responseCode = "201",
                             description = "Successful Created",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageTO.class))
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ItineraryTO.class))
                     ),
                     @ApiResponse(responseCode = "400", description = "Bad request",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class))),
@@ -49,17 +49,18 @@ public class VoyageController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
             }
     )
-    public ResponseEntity<?> createVoyage(@Valid @RequestBody VoyageTO voyageTO) {
-        return voyageService.createVoyage(voyageTO);
+    public ResponseEntity<?> createItinerary(@PathVariable String voyageNumber, @Valid @RequestBody ItineraryTO itineraryTO) {
+        return itineraryService.createItinerary(voyageNumber, itineraryTO);
     }
 
-
-    @GetMapping("/{voyageNumber}")
-    @Operation(summary = "Get Voyage",
+    @GetMapping("/{itineraryId}")
+    @Operation(summary = "Get Itinerary",
             description = """
-                    Get a Voyage by voyageNumber
+                    Get a Itinerary by voyageNumber and itineraryId
                                         
                     - **voyageNumber** (path variable) is **mandatory**
+                                        
+                    - **itineraryId** (path variable) is **mandatory**
                             
                     - Returns **200** on success   
                             
@@ -71,7 +72,7 @@ public class VoyageController {
                             description = "Successful Retrieved",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = VoyageTO.class)
+                                    schema = @Schema(implementation = ItineraryTO.class)
                             )),
                     @ApiResponse(responseCode = "404", description = "Not Found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class))),
@@ -79,19 +80,22 @@ public class VoyageController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
             }
     )
-    public ResponseEntity<?> getVoyageById(@PathVariable String voyageNumber) {
-        return voyageService.getVoyageById(voyageNumber);
+    public ResponseEntity<?> getItineraryById(@PathVariable String voyageNumber, @PathVariable Long itineraryId) {
+        return itineraryService.getItineraryById(voyageNumber, itineraryId);
     }
 
 
-    @PutMapping("/{voyageNumber}")
-    @Operation(summary = "Update Voyage",
+
+    @PutMapping("/{itineraryId}")
+    @Operation(summary = "Update Itinerary",
             description = """
-                    Update a Voyage by voyageNumber
+                    Update a Itinerary by voyageNumber and itineraryId
                             
-                    - Request body must contain valid **Voyage** Payload
+                    - Request body must contain valid **Itinerary** Payload
                                         
                     - **voyageNumber** (path variable) is **mandatory**
+                                        
+                    - **itineraryId** (path variable) is **mandatory**
                             
                     - Returns **202** on success  
                             
@@ -101,7 +105,7 @@ public class VoyageController {
                     @ApiResponse(
                             responseCode = "202",
                             description = "Successful Accepted",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageTO.class))
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ItineraryTO.class))
                     ),
                     @ApiResponse(responseCode = "400", description = "Bad request",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class))),
@@ -111,17 +115,18 @@ public class VoyageController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
             }
     )
-    public ResponseEntity<?> updateVoyageById(@PathVariable String voyageNumber, @Valid @RequestBody VoyageTO voyageTO) {
-        return voyageService.updateVoyageById(voyageNumber, voyageTO);
+    public ResponseEntity<?> updateItineraryById(@PathVariable String voyageNumber, @PathVariable Long itineraryId, @RequestBody ItineraryTO itineraryTO) {
+        return itineraryService.updateItineraryById(voyageNumber, itineraryId, itineraryTO);
     }
 
-
-    @DeleteMapping("/{voyageNumber}")
-    @Operation(summary = "Delete Voyage",
+    @DeleteMapping("/{itineraryId}")
+    @Operation(summary = "Delete Itinerary",
             description = """
-                    Delete a Voyage by voyageNumber  
+                    Delete a Itinerary by voyageNumber and itineraryId
                             
                     - **voyageNumber** (path variable) is **mandatory**
+                                        
+                    - **itineraryId** (path variable) is **mandatory**
                             
                     - Returns **202** on success   
                             
@@ -139,40 +144,9 @@ public class VoyageController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
             }
     )
-    public ResponseEntity<?> deleteVoyageById(@PathVariable String voyageNumber) {
-        return voyageService.deleteVoyageById(voyageNumber);
+    public ResponseEntity<?> deleteItineraryById(@PathVariable String voyageNumber, @PathVariable Long itineraryId) {
+        return itineraryService.deleteItineraryById(voyageNumber, itineraryId);
     }
 
-
-    // eg - ?page=0&size=20&sort=id,desc
-    @GetMapping
-    @Operation(summary = "Get All Voyages",
-            description = """
-                    Create a new Voyage
-                            
-                    - Request body must contain valid **Voyage** Payload
-                            
-                    - Returns **200** on success if cancellation is processed  
-                            
-                    - Possible errors: **400** (Bad Request), **500** (Internal Server Error)  
-                    """,
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successful Retrieved",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = VoyageTO.class)
-                            )
-                    ),
-                    @ApiResponse(responseCode = "500", description = "Internal server error",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
-            }
-    )
-    @ResponseStatus(value = HttpStatus.OK)
-    public PagedModel<?> getAllVoyage(Pageable pageable) {
-        return voyageService.getAllVoyage(pageable);
-
-    }
 
 }

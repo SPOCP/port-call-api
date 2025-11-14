@@ -1,5 +1,7 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,12 +11,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_agent_at_port_agent_at_port_communication", columnNames = "agent_at_port_communication_id"),
-                @UniqueConstraint(name = "uk_agent_at_port_agent_at_port_address", columnNames = "agent_at_port_address_id")
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_port_call_agent_at_port", columnNames = "port_call_id")
+})
 public class AgentAtPort {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,14 +31,17 @@ public class AgentAtPort {
     @Column(length = 70)
     private String agentContactGivenName;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "agent_at_port_communication_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_agent_at_port_agent_at_port_communication"))
+    @OneToOne(mappedBy = "agentAtPort", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private AgentAtPortCommunication agentAtPortCommunication;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "agent_at_port_address_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_agent_at_port_agent_at_port_address"))
+    @OneToOne(mappedBy = "agentAtPort", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private AgentAtPortAddress agentAtPortAddress;
+
+    @OneToOne
+    @JoinColumn(name = "port_call_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_port_call_agent_at_port"))
+    @JsonBackReference
+    private PortCall portCall;
 
 }

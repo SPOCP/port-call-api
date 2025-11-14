@@ -1,6 +1,8 @@
 package com.blychain.spocp.entity;
 
 import com.blychain.spocp.enums.ServiceCode;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,20 +12,17 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_maritime_service_contact_details",
-                        columnNames = "contact_details_id"),
-                @UniqueConstraint(name = "uk_maritime_service_maritime_service_start_event",
-                        columnNames = "maritime_service_start_event_id"),
-                @UniqueConstraint(name = "uk_maritime_service_maritime_service_completion_event",
-                        columnNames = "maritime_service_completion_event_id")
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_maritime_service_id", columnNames = "maritime_service_id")
+})
 public class MaritimeService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    //    An extra id(maritimeServiceId) to manage bi-directional relationship among data
+    @Column(name = "maritime_service_id", unique = true, nullable = false)
+    private Long maritimeServiceId;
 
     @Column(length = 4)
     private ServiceCode serviceCoded;
@@ -37,18 +36,22 @@ public class MaritimeService {
     @Column(length = 17)
     private String serviceBookingNumber;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contact_details_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_maritime_service_contact_details"))
+    @OneToOne(mappedBy = "maritimeService", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private ContactDetails contactDetails;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "maritime_service_start_event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_maritime_service_maritime_service_start_event"))
+    @OneToOne(mappedBy = "maritimeService", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private MaritimeServiceStartEvent maritimeServiceStartEvent;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "maritime_service_completion_event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_maritime_service_maritime_service_completion_event"))
+    @OneToOne(mappedBy = "maritimeService", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private MaritimeServiceCompletionEvent maritimeServiceCompletionEvent;
+
+    @ManyToOne
+    @JoinColumn(name = "port_call_id", foreignKey = @ForeignKey(name = "fk_maritime_service_port_port_call"))
+    @JsonBackReference
+    private PortCall portCall;
+
+
 }

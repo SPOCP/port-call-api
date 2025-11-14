@@ -1,5 +1,6 @@
 package com.blychain.spocp.transferObject;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
@@ -12,6 +13,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ItineraryTO {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long itineraryId;
 
     @Schema(example = "12")
     @Digits(integer = 5, fraction = 0, message = "The portOfCallSequenceNumber must contain up to 5 digits")

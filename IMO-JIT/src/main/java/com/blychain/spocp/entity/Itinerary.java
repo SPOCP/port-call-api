@@ -1,9 +1,7 @@
 package com.blychain.spocp.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -12,14 +10,26 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_itinerary_id", columnNames = "itinerary_id")
+})
 public class Itinerary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Size(max = 5)
+    //    An extra id(itineraryId) to manage bi-directional relationship among data
+    @Column(name = "itinerary_id", unique = true, nullable = false)
+    private Long itineraryId;
+
     private Integer portOfCallSequenceNumber;
 
-//    @Size(max = 5)
     private Integer distanceToDestination;
+
+    @ManyToOne
+    @JoinColumn(name = "voyage_id", foreignKey = @ForeignKey(name = "fk_itinerary_voyage"))
+    @JsonBackReference
+    private Voyage voyage;
+
+
 }

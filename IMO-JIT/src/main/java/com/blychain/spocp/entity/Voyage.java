@@ -1,8 +1,10 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,9 +15,7 @@ import java.util.List;
 @Builder
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_voyage_ship",
-                        columnNames = "ship_id"),
-                @UniqueConstraint(name = "uk_voyage_number",columnNames = "voyage_number")
+                @UniqueConstraint(name = "uk_voyage_number", columnNames = "voyage_number")
         }
 )
 public class Voyage {
@@ -29,20 +29,15 @@ public class Voyage {
     @Column(length = 17)
     private String tradeIdentifierService;
 
+    @OneToMany(mappedBy = "voyage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<PortCall> portCall = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "voyage_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_port_call_voyage"))
-    private List<PortCall> portCall;
+    @OneToMany(mappedBy = "voyage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Itinerary> itinerary = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "voyage_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_itinerary_voyage"))
-    private List<Itinerary> itinerary;
-
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ship_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_voyage_ship"))
+    @OneToOne(mappedBy = "voyage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Ship ship;
 }

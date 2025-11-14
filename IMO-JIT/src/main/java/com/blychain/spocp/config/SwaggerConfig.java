@@ -21,6 +21,8 @@ public class SwaggerConfig {
                                - Voyage update
                                                                
                                - Voyage cancellation
+                               
+                               - and also sub-model creation, updation and deletion.
                                                                
                                **API Standard**
                                - This API follows the IMO Compendium JITA Standard

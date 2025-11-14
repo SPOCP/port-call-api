@@ -20,6 +20,6 @@ public class ErrorResponseTO {
     @Schema(example = "NOT FOUND")
     private String error;
 
-    @Schema(example = "Voyage Not Found with voyageRequestReference : VC000001")
+    @Schema(example = "Voyage Not Found with voyageNumber : VN20250619-MUMDXB")
     private String message;
 }

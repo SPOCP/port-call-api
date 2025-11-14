@@ -1,5 +1,6 @@
 package com.blychain.spocp.transferObject;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -15,6 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class PortCallTO {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long portCallId;
 
     @Schema(example = "INNSA-NSICT")
     @Size(max = 17, message = "The length of portFacilityCoded cannot be more than 17")

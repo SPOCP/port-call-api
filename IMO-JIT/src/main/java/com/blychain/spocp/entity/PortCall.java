@@ -1,10 +1,13 @@
 package com.blychain.spocp.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,19 +16,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_port_call_agent_At_port",
-                        columnNames = "agent_at_port_id"),
-                @UniqueConstraint(name = "uk_port_call_primary_purpose_of_call",
-                        columnNames = "primary_purposes_of_call_id")
-        }
-)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "uk_port_call_id", columnNames = "port_call_id")
+})
 public class PortCall {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    //  An extra id(portCallId) to manage bi-directional relationship among data
+    @Column(name = "port_call_id", unique = true, nullable = false)
+    private Long portCallId;
 
     @Column(length = 17)
     private String portFacilityCoded;
@@ -64,23 +66,24 @@ public class PortCall {
     @Column(length = 256)
     private String portOfArrivalName;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "agent_at_port_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_port_call_agent_At_port"))
+    @OneToOne(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private AgentAtPort agentAtPort;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "primary_purposes_of_call_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_port_call_primary_purpose_of_call"))
+    @OneToOne(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private PrimaryPurposesOfCall primaryPurposesOfCall;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "port_call_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_movement_in_port_port_call"))
-    private List<MovementInPort> movementInPort;
+    @OneToMany(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<MovementInPort> movementInPort = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "port_call_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_maritime_service_port_call"))
-    private List<MaritimeService> maritimeService;
+    @OneToMany(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<MaritimeService> maritimeService = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "voyage_id", foreignKey = @ForeignKey(name = "fk_itinerary_voyage"))
+    @JsonBackReference
+    private Voyage voyage;
 }

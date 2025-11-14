@@ -1,5 +1,7 @@
 package com.blychain.spocp.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,8 +13,8 @@ import lombok.*;
 @Builder
 @Table(
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_movement_in_port_location_geographical_position",
-                        columnNames = "geographical_position_id")
+                @UniqueConstraint(name = "uk_movement_in_port_movement_in_port_location",
+                        columnNames = "movement_in_port_id")
         }
 )
 public class MovementInPortLocation {
@@ -44,8 +46,15 @@ public class MovementInPortLocation {
     @Column(length = 256)
     private String anchorageCoded;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "geographical_position_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_movement_in_port_location_geographical_position"))
+    @OneToOne(mappedBy = "movementInPortLocation", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private GeographicalPosition geographicalPosition;
+
+
+    @OneToOne
+    @JoinColumn(name = "movement_in_port_id", unique = true, nullable = false, foreignKey = @ForeignKey(name = "fk_movement_in_port_movement_in_port_location"))
+    @JsonBackReference
+    private MovementInPort movementInPort;
+
+
 }
