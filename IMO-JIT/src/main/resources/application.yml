@@ -21,19 +21,22 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: imo_jit
 
-
+#You can add your own url for - OWN_MASTER_DATA_BASEURL , to user your master data
 master-data:
-  baseUrl: https://demo-spocp.app.pomfret.cloud/api/public/verificationdata
+  baseUrl: ${OWN_MASTER_DATA_BASEURL:https://freightapi.app.pomfret.cloud/api/public/verificationdata}
 
-
+#You can add your own url for - OWN_FILE_FLOW_URL , to user your imo-fal document service
 fileflow:
-  baseUrl: https://demo-spocp.app.pomfret.cloud/api
+  baseUrl: ${OWN_FILE_FLOW_URL:https://freightapi.app.pomfret.cloud/api}
   pdfgenerationpath: /fileflow/template/
 
 
+# These auth details are used for master-data and fileflow-url
 auth:
   username: <AUTH_USERNAME>
   password: <AUTH_PASSWORD>
+
+
 
 
 

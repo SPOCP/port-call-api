@@ -17,16 +17,16 @@ public class MovementInPortTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long movementInPortId;
 
-    @NotNull(message = "MovementInPort - dateAndTimeToLocationInPortActual cannot be null.")
+    @NotNull(message = "The dateAndTimeToLocationInPortActual cannot be null")
     private OffsetDateTime dateAndTimeToLocationInPortActual;
 
-    @NotNull(message = "MovementInPort - dateAndTimeToLocationInPortEstimated cannot be null.")
+    @NotNull(message = "The dateAndTimeToLocationInPortEstimated cannot be null")
     private OffsetDateTime dateAndTimeToLocationInPortEstimated;
 
-    @NotNull(message = "MovementInPort - dateAndTimeToLocationInPortRequested cannot be null.")
+    @NotNull(message = "The MovementInPort - dateAndTimeToLocationInPortRequested cannot be null")
     private OffsetDateTime dateAndTimeToLocationInPortRequested;
 
-    @NotNull(message = "MovementInPort - dateAndTimeToLocationInPortPlanned cannot be null.")
+    @NotNull(message = "The dateAndTimeToLocationInPortPlanned cannot be null")
     private OffsetDateTime dateAndTimeToLocationInPortPlanned;
 
     @Valid

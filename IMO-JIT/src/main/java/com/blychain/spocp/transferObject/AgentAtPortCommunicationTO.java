@@ -15,26 +15,26 @@ import lombok.*;
 public class AgentAtPortCommunicationTO {
 
     @Schema(example = "john.doe@bluewave.com")
-    @NotBlank(message = "AgentAtPortCommunication - agentEmail cannot be null.")
-    @Email(message = "AgentAtPortCommunication - agentEmail: Invalid value. Please check the field format.")
-    @Size(max = 50, message = "The length of AgentAtPortCommunication - agentEmail cannot be more than 50.")
+    @NotBlank(message = "The agentEmail cannot be null or blank")
+    @Email(message = "Invalid value. Please check the field format")
+    @Size(max = 50, message = "The length cannot be more than 50")
     private String agentEmail;
 
     @Schema(example = "+91-2267891234")
     @Pattern(
-            regexp = "^\\+?[0-9][0-9\\- ]+$",
-            message = "AgentAtPortCommunication - agentLandlineNumber: Invalid value. Please check the field format."
+            regexp = "^$|^\\+?[0-9]{1,4}([ -]?[0-9]{2,15})+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 50, message = "The length of AgentAtPortCommunication - agentLandlineNumber cannot be more than 50.")
+    @Size(max = 50, message = "The length cannot be more than 50")
     private String agentLandlineNumber;
 
     @Schema(example = "+91-9876543210")
-    @NotBlank(message = "AgentAtPortCommunication - agentMobileNumber cannot be null.")
+    @NotBlank(message = "The agentMobileNumber cannot be null or blank")
     @Pattern(
-            regexp = "^\\+?[0-9][0-9\\- ]+$",
-            message = "AgentAtPortCommunication - agentMobileNumber: Invalid value. Please check the field format."
+            regexp = "^$|^\\+?[0-9]{1,4}([ -]?[0-9]{2,15})+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 50, message = "The length of AgentAtPortCommunication - agentMobileNumber cannot be more than 50.")
+    @Size(max = 50, message = "The length cannot be more than 50")
     private String agentMobileNumber;
 
 }

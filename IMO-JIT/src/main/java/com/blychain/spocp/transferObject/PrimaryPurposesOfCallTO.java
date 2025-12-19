@@ -15,12 +15,12 @@ import lombok.*;
 public class PrimaryPurposesOfCallTO {
 
     @Schema(example = "1")
-    @NotBlank(message = "PrimaryPurposesOfCall - primaryPurposeOfCallCoded cannot be null.")
+    @NotBlank(message = "The primaryPurposeOfCallCoded cannot be null or blank")
     @Pattern(
-            regexp = "^[0-9]+$",
-            message = "PrimaryPurposesOfCall - primaryPurposeOfCallCoded: Invalid value. Please check the field format."
+            regexp = "^$|^[0-9]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 3, message = "The length of PrimaryPurposesOfCall - primaryPurposeOfCallCoded cannot be more than 3")
+    @Size(max = 3, message = "The length cannot be more than 3")
     @ValidPrimaryPurposeCallCodes
     private String primaryPurposeOfCallCoded;
 

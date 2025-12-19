@@ -12,36 +12,36 @@ import lombok.*;
 public class ShipTO {
 
     @Schema(example = "9V1234")
-    @NotBlank(message = "Ship - shipCallSign cannot be null.")
+    @NotBlank(message = "The shipCallSign cannot be null or blank")
     @Pattern(
-            regexp = "^[A-Za-z0-9-]+$",
-            message = "Ship - shipCallSign: Invalid value. Please check the field format."
+            regexp = "^$|^[A-Za-z0-9-]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 7, message = "The length of Ship - shipCallSign cannot be more than 7.")
+    @Size(max = 7, message = "The length cannot be more than 7")
     private String shipCallSign;
 
     @Schema(example = "9312345")
-    @NotBlank(message = "Ship - shipIMONumber cannot be null.")
+    @NotBlank(message = "The shipIMONumber cannot be null or blank")
     @Pattern(
-            regexp = "^[A-Za-z0-9-]+$",
-            message = "Ship - shipIMONumber: Invalid value. Please check the field format."
+            regexp = "^$|^[A-Za-z0-9-]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 7, message = "The length of Ship - shipIMONumber cannot be more than 7.")
+    @Size(max = 7, message = "The length cannot be more than 7")
     private String shipIMONumber;
 
     @Schema(example = "419001234")
-    @NotNull(message = "Ship - shipMMSINumber cannot be null.")
-    @Min(value = 100000000, message = "Ship - shipMMSINumber: Invalid value. Please check the field format.")
-    @Max(value = 999999999, message = "Ship - shipMMSINumber: Invalid value. Please check the field format.")
+    @NotNull(message = "The shipMMSINumber cannot be null")
+    @Min(value = 100000000, message = "Invalid value. Please check the field format")
+    @Max(value = 999999999, message = "Invalid value. Please check the field format")
     private Integer shipMMSINumber;
 
     @Schema(example = "MV Blue Horizon")
-    @NotBlank(message = "Ship - shipName cannot be null.")
+    @NotBlank(message = "The shipName cannot be null or blank")
     @Pattern(
-            regexp = "^[A-Za-z0-9 .,&()/-]+$",
-            message = "Ship - shipName: Invalid value. Please check the field format."
+            regexp = "^$|^[A-Za-z0-9 .,&()/-]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 70, message = "The length of Ship - shipName cannot be more than 70.")
+    @Size(max = 70, message = "The length cannot be more than 70")
     private String shipName;
 
 }

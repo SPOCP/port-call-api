@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CustomPdfResponseTO {
 
-    @Schema(example = "IMO_GeneralDeclaration_1111111111111.pdf")
+    @Schema(example = "IMO_GeneralDeclaration_123456789.pdf")
     private String fileName;
 
     @Schema(example = "success")
@@ -21,7 +21,7 @@ public class CustomPdfResponseTO {
     @Schema(example = "PDF generated successfully.")
     private String message;
 
-    @Schema(example = "/imo/doc?pdfName=IMO_GeneralDeclaration_1111111111111.pdf")
+    @Schema(example = "/imo/doc?pdfName=IMO_GeneralDeclaration_123456789.pdf")
     private String getUrl;
 
 }

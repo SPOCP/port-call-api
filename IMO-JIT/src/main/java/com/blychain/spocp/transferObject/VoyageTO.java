@@ -17,22 +17,22 @@ import java.util.List;
 public class VoyageTO {
 
     @Schema(example = "VN20250612-MUMDXB")
-    @NotBlank(message = "Voyage - voyageNumber cannot be null.")
+    @NotBlank(message = "The voyageNumber cannot be null or blank")
     @Pattern(
-            regexp = "^[A-Za-z0-9-]+$",
-            message = "Voyage - voyageNumber: Invalid value. Please check the field format."
+            regexp = "^$|^[A-Za-z0-9-]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 17, message = "The length of Voyage - voyageNumber cannot be more than 17.")
+    @Size(max = 17, message = "The length cannot be more than 17")
     private String voyageNumber;
 
 
     @Schema(example = "TIS-444115")
-    @NotBlank(message = "Voyage - tradeServiceIdentifier cannot be null.")
+    @NotBlank(message = "The tradeServiceIdentifier cannot be null or blank")
     @Pattern(
-            regexp = "^[A-Za-z0-9-]+$",
-            message = "Voyage - tradeServiceIdentifier: Invalid value. Please check the field format."
+            regexp = "^$|^[A-Za-z0-9-]+$",
+            message = "Invalid value. Please check the field format"
     )
-    @Size(max = 17, message = "The length of Voyage - tradeServiceIdentifier cannot be more than 17.")
+    @Size(max = 17, message = "The length cannot be more than 17")
     private String tradeServiceIdentifier;
 
     @Valid

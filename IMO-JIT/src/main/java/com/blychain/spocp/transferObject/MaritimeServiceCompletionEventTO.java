@@ -12,15 +12,15 @@ import java.time.OffsetDateTime;
 @Builder
 public class MaritimeServiceCompletionEventTO {
 
-    @NotNull(message = "MaritimeServiceCompletionEvent - dateAndTimeOfServiceCompletionActual cannot be null.")
+    @NotNull(message = "The dateAndTimeOfServiceCompletionActual cannot be null")
     private OffsetDateTime dateAndTimeOfServiceCompletionActual;
 
-    @NotNull(message = "MaritimeServiceCompletionEvent - dateAndTimeOfServiceCompletionEstimated cannot be null.")
+    @NotNull(message = "The dateAndTimeOfServiceCompletionEstimated cannot be null")
     private OffsetDateTime dateAndTimeOfServiceCompletionEstimated;
 
-    @NotNull(message = "MaritimeServiceCompletionEvent - dateAndTimeOfServiceCompletionPlanned cannot be null.")
+    @NotNull(message = "The dateAndTimeOfServiceCompletionPlanned cannot be null")
     private OffsetDateTime dateAndTimeOfServiceCompletionPlanned;
 
-    @NotNull(message = "MaritimeServiceCompletionEvent - dateAndTimeOfServiceCompletionRequested cannot be null.")
+    @NotNull(message = "The dateAndTimeOfServiceCompletionRequested cannot be null")
     private OffsetDateTime dateAndTimeOfServiceCompletionRequested;
 }
