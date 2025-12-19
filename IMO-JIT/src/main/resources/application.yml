@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    context-path: /jit
+    context-path: /imomsw
 
 spring:
   application:
@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://<YOUR_DB_HOST>:5432/<YOUR_DB_NAME>
-    username: <YOUR_DB_USERNAME>
-    password: <YOUR_DB_PASSWORD>
+    url: jdbc:postgresql://<DB_HOST>:5432/<DB_NAME>
+    username: <DB_USERNAME>
+    password: <DB_PASSWORD>
 
   jpa:
     hibernate:
@@ -23,13 +23,17 @@ spring:
 
 
 master-data:
-  baseUrl: http://dev-mycargo.ibpaas.pomfret.cloud/api/public/verificationdata
+  baseUrl: https://demo-spocp.app.pomfret.cloud/api/public/verificationdata
 
 
+fileflow:
+  baseUrl: https://demo-spocp.app.pomfret.cloud/api
+  pdfgenerationpath: /fileflow/template/
 
 
-
-
+auth:
+  username: <AUTH_USERNAME>
+  password: <AUTH_PASSWORD>
 
 
 

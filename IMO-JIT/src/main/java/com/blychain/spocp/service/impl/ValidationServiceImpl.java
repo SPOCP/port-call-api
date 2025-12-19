@@ -6,10 +6,9 @@ import com.blychain.spocp.transferObject.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,6 +24,12 @@ public class ValidationServiceImpl {
 
     @Value("${master-data.baseUrl}")
     private String baseUrl;
+
+    @Value("${auth.username}")
+    private String username;
+
+    @Value("${auth.password}")
+    private String password;
 
     private final RestTemplate restTemplate;
 
@@ -103,7 +108,8 @@ public class ValidationServiceImpl {
     private void validatePortCode(String coded, String name) {
         if (coded == null) return;
 
-        String validationMessage = validateUnLocationData(coded, name);
+//        String validationMessage = validateUnLocationData(coded, name);
+        String validationMessage = validatePortData(coded, name);
         if (validationMessage != null) {
             throw new AppException(validationMessage, HttpStatus.BAD_REQUEST);
         }
@@ -135,6 +141,12 @@ public class ValidationServiceImpl {
                 .queryParam("tableName", "country")
                 .queryParam("countryCode", countryCode);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("username", username);
+        headers.set("password", password);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
         String apiUrl = uriBuilder.toUriString();
 
         try {
@@ -142,7 +154,7 @@ public class ValidationServiceImpl {
             ResponseEntity<List<CountryCodeTO>> response = restTemplate.exchange(
                     apiUrl,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<CountryCodeTO>>() {
                     }
             );
@@ -156,62 +168,76 @@ public class ValidationServiceImpl {
             }
 
         } catch (RestClientException ex) {
-            throw new AppException("Unable to validate countryCode due to external service error.",
+            throw new AppException("Unable to validate countryCode due to external service error." + ex,
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return null; // Valid
     }
 
+
     /**
-     * Calls external Master Data API to validate a given UN Location Code and Name.
-     * unlocationCode The UN location code to validate.
-     * locationName   The corresponding location name.
+     * Calls external Master Data API to validate a given Port Code and Name.
+     * portCode The UN location code to validate.
+     * portName   The corresponding location name.
      * Null if valid, or error message if invalid.
      */
-    private String validateUnLocationData(String unlocationCode, String locationName) {
+    private String validatePortData(String portCode, String portName) {
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .queryParam("tableName", "unlocation")
-                .queryParam("unlocationCode", unlocationCode);
+                .queryParam("tableName", "portList")
+                .queryParam("portCode", portCode);
 
-        if (locationName != null && !locationName.isBlank()) {
-            uriBuilder.queryParam("unLocationName", locationName);
+        if (portName != null && !portName.isBlank()) {
+            uriBuilder.queryParam("portName", portName);
         }
 
         URI uri = uriBuilder.encode().build().toUri();
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("username", username);
+        headers.set("password", password);
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+
         try {
-//            Call Master Data Service for UN Location validation
-            ResponseEntity<List<UnLocationCodeTO>> response = restTemplate.exchange(
+//            Call Master Data Service for Port Code
+            ResponseEntity<List<PortListTO>> response = restTemplate.exchange(
                     uri,
                     HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<UnLocationCodeTO>>() {
+                    entity,
+                    new ParameterizedTypeReference<List<PortListTO>>() {
                     }
             );
 
 //            Extract response body
-            List<UnLocationCodeTO> body = Optional.ofNullable(response.getBody()).orElse(Collections.emptyList());
+            List<PortListTO> body = Optional.ofNullable(response.getBody()).orElse(Collections.emptyList());
 
 //            Return error message if no valid records found
             if (body.isEmpty()) {
-                if (locationName != null) {
-                    return String.format("Invalid data provided for UnLocationCode : %s and LocationName : %s.",
-                            unlocationCode, locationName);
+                if (portName != null) {
+                    return String.format("Invalid data provided for portCode : %s and portName : %s.",
+                            portCode, portName);
                 } else {
-                    return String.format("Invalid data provided for UnLocationCode : %s.", unlocationCode);
+                    return String.format("Invalid data provided for portCode : %s.", portCode);
                 }
             }
 
-        } catch (RestClientException ex) {
-            throw new AppException("Unable to validate UnLocationCode due to external service error.",
+        }
+        catch (HttpClientErrorException.Unauthorized ex) {
+            // 401
+            throw new AppException(
+                    "Invalid credentials to validate the data, Please Register to Pomfret Console",
+                    HttpStatus.UNAUTHORIZED
+            );
+        }
+        catch (RestClientException ex) {
+            throw new AppException("Unable to validate portCode due to external service error." + ex,
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return null; // Valid
     }
-
-
 
 }

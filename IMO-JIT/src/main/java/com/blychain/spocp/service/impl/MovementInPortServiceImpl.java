@@ -25,6 +25,9 @@ public class MovementInPortServiceImpl implements MovementInPortService {
     //    Mapper
     private final MovementInPortMapper movementInPortMapper;
 
+    //    Service
+    private final SetDataServiceImpl setDataService;
+
     @Override
     public ResponseEntity<?> createMovementInPort(Long portCallId,
                                                   MovementInPortTO movementInPortTO) {
@@ -37,16 +40,11 @@ public class MovementInPortServiceImpl implements MovementInPortService {
 //        Converting Dto to Entity
         MovementInPort movementInPort = movementInPortMapper.dtoToMovementInPort(movementInPortTO);
 
-//        Setting MovementInPortId
+//        Setting data and Bi-directional Mapping
         long mpId = movementInPortRepository.findMaxId() + 1;
-        movementInPort.setMovementInPortId(mpId);
-
-//        Setting data for Bi-directional Mapping
-        movementInPort.setPortCall(portCall);
+        setDataService.setDataForMovementInPort(movementInPort, portCall, mpId);
         portCall.getMovementInPort().add(movementInPort);
 
-//        Setting Data among internal Objects
-        setDataForMovementInPort(movementInPort);
 
 //        Saving Data
         MovementInPort save = movementInPortRepository.save(movementInPort);
@@ -88,24 +86,16 @@ public class MovementInPortServiceImpl implements MovementInPortService {
                         String.format("Cannot find MovementInPort with movementInPortId: %d for portCallId: %s", movementInPortId, portCallId),
                         HttpStatus.NOT_FOUND));
 
-//        Obtaining the MovementInPortId
-        Long mpId = existing.getMovementInPortId();
 
 //        Deleting the previous MovementInPort data with same MovementInPortId
-        deleteMovementInPortyById(portCallId, mpId);
+        deleteMovementInPortyById(portCallId, movementInPortId);
         portCallRepository.flush();
 
 //        Converting Dto to Entity
         MovementInPort updateMovementInPort = movementInPortMapper.dtoToMovementInPort(movementInPortTO);
 
-//        Setting MovementInPortId
-        updateMovementInPort.setMovementInPortId(mpId);
-
-//        Setting Data among internal Objects
-        setDataForMovementInPort(updateMovementInPort);
-
-//        Setting data for Bi-directional Mapping
-        updateMovementInPort.setPortCall(portCall);
+//        Setting data and Bi-directional Mapping
+        setDataService.setDataForMovementInPort(updateMovementInPort, portCall, movementInPortId);
         portCall.getMovementInPort().add(updateMovementInPort);
 
 //        Saving Data
@@ -140,21 +130,6 @@ public class MovementInPortServiceImpl implements MovementInPortService {
                 String.format("Successfully Deleted MovementInPort of movementInPortId: %d from PortCall", movementInPortId));
 
         return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
-    }
-
-
-
-
-    private void setDataForMovementInPort(MovementInPort movementInPort) {
-        if (movementInPort.getMovementInPortLocation() != null) {
-            MovementInPortLocation mpLocation = movementInPort.getMovementInPortLocation();
-            mpLocation.setMovementInPort(movementInPort);
-
-            if (mpLocation.getGeographicalPosition() != null) {
-                GeographicalPosition geographicalPosition = mpLocation.getGeographicalPosition();
-                geographicalPosition.setMovementInPortLocation(mpLocation);
-            }
-        }
     }
 
 

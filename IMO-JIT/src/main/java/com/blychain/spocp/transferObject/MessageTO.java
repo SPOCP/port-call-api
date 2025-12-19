@@ -10,6 +10,6 @@ import lombok.*;
 @Builder
 public class MessageTO {
 
-    @Schema(example = "Successfully Updated Voyage with voyageNumber: VC000001")
+    @Schema(example = "Successfully Updated Voyage with voyageNumber: VN20250612-MUMDXB")
     private String message;
 }

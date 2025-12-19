@@ -23,6 +23,9 @@ public class ItineraryServiceImpl implements ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final VoyageRepository voyageRepository;
 
+    //    Service
+    private final SetDataServiceImpl setDataService;
+
     //    Mapper
     private final ItineraryMapper itineraryMapper;
 
@@ -37,13 +40,11 @@ public class ItineraryServiceImpl implements ItineraryService {
 //        Converting DTO to Entity
         Itinerary itinerary = itineraryMapper.dtoToItinerary(itineraryTO);
 
-//        Setting ItineraryId
-        Long itId = itineraryRepository.findMaxId() + 1;
-        itinerary.setItineraryId(itId);
 
-//        Setting data for Bi-directional Mapping
+//        Setting data and Bi-directional Mapping
+        Long itId = itineraryRepository.findMaxId() + 1;
+        setDataService.setDataForItinerary(itinerary, voyage, itId);
         voyage.getItinerary().add(itinerary);
-        itinerary.setVoyage(voyage);
 
 //        Saving Data
         Itinerary save = itineraryRepository.save(itinerary);
@@ -85,19 +86,16 @@ public class ItineraryServiceImpl implements ItineraryService {
                 new AppException(String.format("Cannot find Itinerary with itineraryId: %d for voyageNumber: %s", itineraryId, voyageNumber), HttpStatus.NOT_FOUND)
         );
 
-//        Obtaining the itinerary Id
-        Long itId = itinerary.getItineraryId();
 
 //        Deleting the previous itinerary with same itinerary Id
-        deleteItineraryById(voyageNumber, itId);
+        deleteItineraryById(voyageNumber, itineraryId);
         voyageRepository.flush();
 
 //        Converting Dto to Entity
         Itinerary upItinerary = itineraryMapper.dtoToItinerary(itineraryTO);
 
-//        Setting data for bi-directional mapping
-        upItinerary.setItineraryId(itId);
-        upItinerary.setVoyage(voyage);
+//        Setting data and bi-directional mapping
+        setDataService.setDataForItinerary(upItinerary, voyage, itineraryId);
         voyage.getItinerary().add(upItinerary);
 
 //        Saving Data

@@ -27,12 +27,14 @@ public class Voyage {
     private String voyageNumber;
 
     @Column(length = 17)
-    private String tradeIdentifierService;
+    private String tradeServiceIdentifier;
 
+    @Builder.Default
     @OneToMany(mappedBy = "voyage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<PortCall> portCall = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "voyage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Itinerary> itinerary = new ArrayList<>();

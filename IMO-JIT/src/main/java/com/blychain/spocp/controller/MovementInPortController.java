@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/portcall/{portCallId}/movement-in-port")
+@RequestMapping("/jit/portcall/{portCallId}/movement-in-port")
 @RequiredArgsConstructor
-@Tag(name = "Movement-In-Port API", description = "Movement-In-Port operations")
+@Tag(name = "Movement In Port API", description = "Movement-In-Port operations")
 public class MovementInPortController {
 
     //    Service

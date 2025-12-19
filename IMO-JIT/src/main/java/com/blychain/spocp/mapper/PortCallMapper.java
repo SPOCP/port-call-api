@@ -5,7 +5,7 @@ import com.blychain.spocp.entity.PortCall;
 import com.blychain.spocp.transferObject.PortCallTO;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PortCallMapper {
 
     @Mapping(target = "voyage", ignore = true)

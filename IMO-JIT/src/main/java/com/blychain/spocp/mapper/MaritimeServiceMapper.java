@@ -5,8 +5,9 @@ import com.blychain.spocp.transferObject.MaritimeServiceTO;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = false))
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MaritimeServiceMapper {
 
     @Mapping(target = "portCall", ignore = true)

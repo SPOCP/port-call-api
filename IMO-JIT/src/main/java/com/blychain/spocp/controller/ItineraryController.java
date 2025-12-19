@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/voyage/{voyageNumber}/itinerary")
+@RequestMapping("/jit/voyage/{voyageNumber}/itinerary")
 @RequiredArgsConstructor
 @Tag(name = "Itinerary API", description = "Itinerary operations")
 public class ItineraryController {
@@ -115,7 +115,7 @@ public class ItineraryController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseTO.class)))
             }
     )
-    public ResponseEntity<?> updateItineraryById(@PathVariable String voyageNumber, @PathVariable Long itineraryId, @RequestBody ItineraryTO itineraryTO) {
+    public ResponseEntity<?> updateItineraryById(@PathVariable String voyageNumber, @PathVariable Long itineraryId,@Valid @RequestBody ItineraryTO itineraryTO) {
         return itineraryService.updateItineraryById(voyageNumber, itineraryId, itineraryTO);
     }
 

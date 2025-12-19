@@ -15,9 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/voyage/{voyageNumber}/portcall")
+@RequestMapping("/jit/voyage/{voyageNumber}/portcall")
 @RequiredArgsConstructor
-@Tag(name = "Port-Call API", description = "Port-Call operations")
+@Tag(name = "Port Call API", description = "Port-Call operations")
 public class PortCallController {
 
     //    Service

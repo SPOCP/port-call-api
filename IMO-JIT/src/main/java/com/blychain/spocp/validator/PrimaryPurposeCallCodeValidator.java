@@ -9,6 +9,9 @@ public class PrimaryPurposeCallCodeValidator implements ConstraintValidator<Vali
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.isBlank()) {
+            return true;
+        }
         return PrimaryPurposeOfCallCodes.isValid(value);
     }
 

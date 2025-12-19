@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/voyage")
+@RequestMapping("/jit/voyage")
 @RequiredArgsConstructor
 @Tag(name = "Voyage API", description = "Voyage operations")
 public class VoyageController {

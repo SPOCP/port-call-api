@@ -1,6 +1,6 @@
 package com.blychain.spocp.service.impl;
 
-import com.blychain.spocp.entity.*;
+import com.blychain.spocp.entity.Voyage;
 import com.blychain.spocp.exception.AppException;
 import com.blychain.spocp.mapper.VoyageMapper;
 import com.blychain.spocp.repository.*;
@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class VoyageServiceImpl implements VoyageService {
 
     //    Service
     private final ValidationServiceImpl validationService;
+    private final SetDataServiceImpl setDataService;
 
     //    Mapper
     private final VoyageMapper voyageMapper;
@@ -38,14 +39,14 @@ public class VoyageServiceImpl implements VoyageService {
     @Override
     public ResponseEntity<?> createVoyage(VoyageTO voyageTO) {
 
-//        Validating the Data
+//        Validating the Data (Please add required username and password)
         validationService.validateInformation(voyageTO);
 
 //        Converting Dto to Entity
         Voyage voyage = voyageMapper.dtoToVoyage(voyageTO);
 
-//        Setting Data among internal Objects
-        setDataForVoyage(voyage);
+//        Setting Data
+        setDataService.setDataForVoyage(voyage);
 
 //        Saving Data
         Voyage save = voyageRepository.save(voyage);
@@ -73,15 +74,15 @@ public class VoyageServiceImpl implements VoyageService {
     @Transactional
     public ResponseEntity<?> updateVoyageById(String voyageNumber, VoyageTO voyageTO) {
 
+        if (!Objects.equals(voyageNumber, voyageTO.getVoyageNumber())) {
+            throw new AppException("Different VoyageNumber is passed in the payload, VoyageNumber: " + voyageNumber, HttpStatus.BAD_REQUEST);
+        }
+
 //        Finding If Voyage Exist or not
         Voyage voyage = voyageRepository.findByVoyageNumber(voyageNumber)
                 .orElseThrow(() ->
                         new AppException("Cannot find Voyage with voyageNumber: " + voyageNumber, HttpStatus.NOT_FOUND)
                 );
-
-        if (voyageNumber != voyage.getVoyageNumber()) {
-            throw new AppException("Different VoyageNumber is passed in the payload, VoyageNumber: " + voyageNumber, HttpStatus.BAD_REQUEST);
-        }
 
 //        Validating the Data
         validationService.validateInformation(voyageTO);
@@ -96,8 +97,8 @@ public class VoyageServiceImpl implements VoyageService {
 //        Setting VoyageNumber
         updatedVoyage.setVoyageNumber(voyageNumber);
 
-//        Setting Data among internal Objects
-        setDataForVoyage(updatedVoyage);
+//        Setting Data
+        setDataService.setDataForVoyage(updatedVoyage);
 
 //        Saving Data
         Voyage save = voyageRepository.save(updatedVoyage);
@@ -132,125 +133,6 @@ public class VoyageServiceImpl implements VoyageService {
         Page<VoyageTO> voyages = allVoyages.map(voyageMapper::voyageToDto);
 
         return new PagedModel<>(voyages);
-    }
-
-
-    /**
-     * Sets up bidirectional relationships and assigns sequential IDs
-     * for nested entities within the Voyage aggregate structure.
-     * <p>
-     * This method ensures that all child entities (Ship, Itinerary, PortCall, etc.)
-     * are properly linked to their parent entities before persistence.
-     */
-    private void setDataForVoyage(Voyage voyage) {
-
-//        --- Ship ---
-//        If Ship exists, link it back to Voyage
-        if (voyage.getShip() != null) {
-            voyage.getShip().setVoyage(voyage);
-        }
-
-//        --- Itinerary ---
-//        Assign sequential itinerary IDs and set Voyage reference
-        List<Itinerary> itinerary = voyage.getItinerary();
-        if (itinerary != null) {
-            Long maxId = itineraryRepository.findMaxId() + 1;
-            for (Itinerary it : itinerary) {
-                it.setVoyage(voyage);
-                it.setItineraryId(maxId);
-                maxId++;
-            }
-        }
-
-//        --- PortCall ---
-//        Assign sequential portCall IDs and set Voyage reference
-        List<PortCall> portCall = voyage.getPortCall();
-        if (portCall != null) {
-            Long maxId = portCallRepository.findMaxId() + 1;
-
-            for (PortCall pc : portCall) {
-                pc.setVoyage(voyage);
-                pc.setPortCallId(maxId);
-                maxId++;
-
-                // -------------------- AgentAtPort --------------------
-                if (pc.getAgentAtPort() != null) {
-                    AgentAtPort agentAtPort = pc.getAgentAtPort();
-                    agentAtPort.setPortCall(pc);
-
-                    // Agent Address (One-to-One)
-                    if (agentAtPort.getAgentAtPortAddress() != null) {
-                        agentAtPort.getAgentAtPortAddress().setAgentAtPort(agentAtPort);
-                    }
-
-                    // Agent Communication (One-to-One)
-                    if (agentAtPort.getAgentAtPortCommunication() != null) {
-                        agentAtPort.getAgentAtPortCommunication().setAgentAtPort(agentAtPort);
-                    }
-                }
-
-                // -------------------- Primary Purpose of Call --------------------
-                if (pc.getPrimaryPurposesOfCall() != null) {
-                    pc.getPrimaryPurposesOfCall().setPortCall(pc);
-                }
-
-                // -------------------- Movement In Port --------------------
-                List<MovementInPort> movementInPort = pc.getMovementInPort();
-                if (movementInPort != null) {
-                    long mpId = movementInPortRepository.findMaxId() + 1;
-
-                    for (MovementInPort mp : movementInPort) {
-                        mp.setPortCall(pc);
-                        mp.setMovementInPortId(mpId);
-                        mpId++;
-
-                        // --- Movement In Port Location ---
-                        if (mp.getMovementInPortLocation() != null) {
-                            MovementInPortLocation mpLocation = mp.getMovementInPortLocation();
-                            mpLocation.setMovementInPort(mp);
-
-                            // Geographical Position under MovementInPortLocation
-                            if (mpLocation.getGeographicalPosition() != null) {
-                                mpLocation.getGeographicalPosition().setMovementInPortLocation(mpLocation);
-                            }
-                        }
-                    }
-                }
-
-                // -------------------- Maritime Service --------------------
-                List<MaritimeService> maritimeService = pc.getMaritimeService();
-                if (maritimeService != null) {
-                    Long msId = maritimeServiceRepository.findMaxId() + 1;
-
-                    for (MaritimeService ms : maritimeService) {
-                        ms.setPortCall(pc);
-                        ms.setMaritimeServiceId(msId);
-                        msId++;
-
-                        // --- Contact Details ---
-                        if (ms.getContactDetails() != null) {
-                            ContactDetails cd = ms.getContactDetails();
-                            cd.setMaritimeService(ms);
-
-                            // Contact Communication (One-to-One)
-                            if (cd.getCommunication() != null) {
-                                cd.getCommunication().setContactDetails(cd);
-                            }
-                        }
-
-                        // --- Maritime Service Start Event ---
-                        if (ms.getMaritimeServiceStartEvent() != null) {
-                            ms.getMaritimeServiceStartEvent().setMaritimeService(ms);
-                        }
-
-                        // --- Maritime Service Completion Event ---
-                        if (ms.getMaritimeServiceCompletionEvent() != null) {
-                            ms.getMaritimeServiceCompletionEvent().setMaritimeService(ms);
-                        }
-                    }
-                }
-            }
-        }
     }
 
 

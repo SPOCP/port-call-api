@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -148,25 +151,43 @@ public class GlobalExceptionHandler {
     // Invalid JSON / enum values
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseTO> handleJsonParseError(HttpMessageNotReadableException ex) {
-        String message = "Invalid input. Please check your data or selected options.";
 
-        Throwable cause = ex.getMostSpecificCause();
-        if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException invalidFormatEx) {
-            // Get rejected value
-            Object rejectedValue = invalidFormatEx.getValue();
-            // Get field path
-            String field = invalidFormatEx.getPath().stream()
-                    .map(ref -> ref.getFieldName())
-                    .filter(f -> f != null)
-                    .collect(Collectors.joining("."));
-            // Build allowed values for enums
-            Object targetType = invalidFormatEx.getTargetType();
-            if (targetType != null && ((Class<?>) targetType).isEnum()) {
-                message = "Invalid value '" + rejectedValue + "' for field '" + field;
-            } else {
-                message = "Invalid value '" + rejectedValue + "' for field '" + field + "'.";
+        String field = "unknown";
+        String reason = "Invalid value or format";
+
+        Throwable cause = ex.getCause();
+
+        // 1️⃣ Try Jackson mapping exception (best case)
+        if (cause instanceof com.fasterxml.jackson.databind.JsonMappingException jme) {
+
+            if (!jme.getPath().isEmpty()) {
+                field = jme.getPath().stream()
+                        .map(ref -> ref.getFieldName())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.joining("."));
+            }
+
+            // Enum case
+            if (cause instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException ife &&
+                    ife.getTargetType() != null &&
+                    ife.getTargetType().isEnum()) {
+
+                reason = "Value not allowed";
             }
         }
+
+        // 2️⃣ Fallback: extract field name from message (MOST IMPORTANT)
+        if ("unknown".equals(field)) {
+            String msg = ex.getMessage();
+
+            // works for most Jackson errors
+            Matcher matcher = Pattern.compile("\"([^\"]+)\"").matcher(msg);
+            if (matcher.find()) {
+                field = matcher.group(1);
+            }
+        }
+
+        String message = "Field '" + field + "' has error: " + reason + ".";
 
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }

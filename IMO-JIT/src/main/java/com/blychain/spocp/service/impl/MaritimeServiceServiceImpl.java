@@ -1,6 +1,5 @@
 package com.blychain.spocp.service.impl;
 
-import com.blychain.spocp.entity.ContactDetails;
 import com.blychain.spocp.entity.MaritimeService;
 import com.blychain.spocp.entity.PortCall;
 import com.blychain.spocp.exception.AppException;
@@ -29,6 +28,7 @@ public class MaritimeServiceServiceImpl implements MaritimeServiceService {
 
     //    Service
     private final ValidationServiceImpl validationService;
+    private final SetDataServiceImpl setDataService;
 
     @Override
     public ResponseEntity<?> createMaritimeService(Long portCallId, MaritimeServiceTO maritimeServiceTO) {
@@ -44,16 +44,12 @@ public class MaritimeServiceServiceImpl implements MaritimeServiceService {
 //        Convert Dto to Entity
         MaritimeService maritimeService = maritimeServiceMapper.dtoToMaritimeService(maritimeServiceTO);
 
-//        Setting MaritimeServiceId
-        long msId = maritimeServiceRepository.findMaxId() + 1;
-        maritimeService.setMaritimeServiceId(msId);
 
-//        Setting data for Bi-directional Mapping
-        maritimeService.setPortCall(portCall);
+//        Setting data and Bi-directional Mapping
+        long msId = maritimeServiceRepository.findMaxId() + 1;
+        setDataService.setDataForMaritimeService(maritimeService, portCall, msId);
         portCall.getMaritimeService().add(maritimeService);
 
-//        Setting Data among internal Objects
-        setDataForMaritimeService(maritimeService);
 
 //        Saving Data
         MaritimeService save = maritimeServiceRepository.save(maritimeService);
@@ -96,25 +92,18 @@ public class MaritimeServiceServiceImpl implements MaritimeServiceService {
 //        Validating the Data
         validationService.validateMaritimeService(maritimeServiceTO);
 
-//        Obtaining the MaritimeServiceId
-        Long msId = existing.getMaritimeServiceId();
 
 //        Deleting the previous MaritimeService data with same MaritimeServiceId
-        deleteMaritimeServiceById(portCallId, msId);
+        deleteMaritimeServiceById(portCallId, maritimeServiceId);
         portCallRepository.flush();
 
 //      Converting Dto to Entity
         MaritimeService updateMaritimeService = maritimeServiceMapper.dtoToMaritimeService(maritimeServiceTO);
 
-//        Setting MaritimeServiceId
-        updateMaritimeService.setMaritimeServiceId(msId);
-
-//        Setting data for Bi-directional Mapping
-        updateMaritimeService.setPortCall(portCall);
+//        Setting data and Bi-directional Mapping
+        setDataService.setDataForMaritimeService(updateMaritimeService, portCall, maritimeServiceId);
         portCall.getMaritimeService().add(updateMaritimeService);
 
-//        Setting Data among internal Objects
-        setDataForMaritimeService(updateMaritimeService);
 
 //        Saving Data
         MaritimeService save = maritimeServiceRepository.save(updateMaritimeService);
@@ -148,28 +137,5 @@ public class MaritimeServiceServiceImpl implements MaritimeServiceService {
         return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
     }
 
-
-    private void setDataForMaritimeService(MaritimeService ms) {
-
-        if (ms.getContactDetails() != null) {
-
-            ContactDetails cd = ms.getContactDetails();
-
-            cd.setMaritimeService(ms);
-
-            if (cd.getCommunication() != null) {
-                cd.getCommunication().setContactDetails(cd);
-            }
-        }
-
-        if (ms.getMaritimeServiceStartEvent() != null) {
-            ms.getMaritimeServiceStartEvent().setMaritimeService(ms);
-        }
-
-        if (ms.getMaritimeServiceCompletionEvent() != null) {
-            ms.getMaritimeServiceCompletionEvent().setMaritimeService(ms);
-        }
-
-    }
 
 }

@@ -74,10 +74,12 @@ public class PortCall {
     @JsonManagedReference
     private PrimaryPurposesOfCall primaryPurposesOfCall;
 
+    @Builder.Default
     @OneToMany(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<MovementInPort> movementInPort = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "portCall", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<MaritimeService> maritimeService = new ArrayList<>();
